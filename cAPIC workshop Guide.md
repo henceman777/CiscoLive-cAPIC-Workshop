@@ -72,6 +72,10 @@ Import the libraires and define the main method
 	import cobra.mit.access
 	import cobra.mit.session
 	import cobra.mit.request
+	import cobra.model.pol
+	import cobra.model.fv
+	import cobra.model.cloud
+	import cobra.model.vz
 	from credentials import *
 	from variables import *
 	import json
@@ -213,7 +217,8 @@ Continue editing <em>workshop.py</em>
 
     	print("\nNew Objects created:\n\n{}\n".format(json.dumps(config_data, indent=4, sort_keys=True)))
 
-
+	if __name__ == '__main__':
+    		main()
 On the console:
 
 	python workshop.py
@@ -358,7 +363,7 @@ You should see a json output with the tenant, vrf , cloud context profile and ot
 
 
 ###Task 8: 
-####Create a Subnet and Attach it to AWS Cloud Zone
+####Create a Subnet and Attach it to AWS Availability Zone
 
 In the method create_cloud_context_profile, create a child object of the previously created cloud CIDR, Cloud Subnet. Attach that Subnet to the AWS region
 
