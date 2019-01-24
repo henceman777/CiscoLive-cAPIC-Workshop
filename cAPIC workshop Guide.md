@@ -1,4 +1,4 @@
-#cAPIC WORKSHOP
+# cAPIC WORKSHOP
 
 ### Go to the terminal and run: 
 
@@ -64,7 +64,7 @@ But you are encouraged to try it on your own. Copy-Paste is absoultely ACCEPTABL
 
 Use Your favourite editor to create a file workshop.py
 
-###Task 0:
+### Task 0:
 Import the libraires and define the main method 
 
 	#!/usr/bin/env python
@@ -97,7 +97,7 @@ Make sure there are no errors
 
 Continue editing workshop.py
 
-###Task 1:
+### Task 1:
 #### Create a session to the cloud 
 In main method:
 
@@ -116,8 +116,8 @@ On the console:
 
 Make sure there are no errors
 
-###Task 2:
-####	Create a Tenant
+### Task 2:
+#### Tenant
 A Tenant is a container for all network, security, troubleshooting and L4 – 7 service policies.   Tenant resources are isolated from each other, allowing management by different administrators. 
 
 
@@ -165,13 +165,12 @@ Continue editing <em>workshop.py</em>
 		#submit the configuration to the apic and print a success message
 		config_request = cobra.mit.request.ConfigRequest()
 
-		config_request.addMo(tenant)
+		
 
 		session.commit(config_request)
 
 		config_data = json.loads(config_request.data)
 
-		print("\nNew Objects created:\n\n{}\n".format(json.dumps(config_data, indent=4, sort_keys=True)))
 
 On the console:
 
@@ -218,7 +217,7 @@ Continue editing <em>workshop.py</em>
     	print("\nNew Objects created:\n\n{}\n".format(json.dumps(config_data, indent=4, sort_keys=True)))
 
 	if __name__ == '__main__':
-    		main()
+    	main()
 On the console:
 
 	python workshop.py
@@ -229,7 +228,7 @@ You should see a json output with the tenant name and the parameters you put in
 	
 Now you have a hang of it. Let's march on
 
-###Task 3:
+### Task 3:
 #### Create a VRF
 Private networks (also called VRFs or contexts) are defined within a tenant to allow isolated and potentially overlapping IP address space
 
@@ -259,6 +258,9 @@ Define a method <em>create_vrf</em> and call it in main after the tenant object 
     	# VRF is a child of a Tenant
     	create_vrf(tenant)
 	
+		#submit the configuration to the apic and print a success message
+		# Code here ...
+	
 On the console:
 
 	python workshop.py
@@ -267,9 +269,9 @@ You should see a json output with the tenant, vrf and other objects.
 
 
 	
-###	Task 4:
+### Task 4:
 #### Create a Cloud Context Profile:
-Cloud Context Profile is a new class in ACI whihc ties the AWS Regions, CIDRs and Subnets to a VRF
+Cloud Context Profile is a new class in ACI which ties the AWS Regions, CIDRs and Subnets to a VRF
 
 Cloud Context Profile is a child of a Tenant
 
@@ -281,7 +283,7 @@ Edit <em>variables.py</em>
 	CLOUDCTXPROFILE = "cloudcontext-{usernumber}" #input your usernumber
 	REGIONPROFILE = "uni/clouddomp/provp-aws/region-us-west-1"
 	CIDRADDR = "192.168.0.0/16" #PLEASE DO NOT CHANGE
-	SUBNETIP = "192.168.11.0/24"  #192.168.1<usernumber>.0/24  ex:user1:92.168.11.0/24, user2:192.168.12.0/24, user3:192.168.13.0/24
+	SUBNETIP = "192.168.11.0/24"  #192.168.1<usernumber>.0/24  ex:user1:192.168.11.0/24, user2:192.168.12.0/24, user3:192.168.13.0/24
 	ZONEPROFILE = "uni/clouddomp/provp-aws/region-us-west-1/zone-us-west-1a"
 
 Continue editing <em>workshop.py</em>
@@ -304,16 +306,13 @@ Define a method create_cloud_ctx_profile(tenant)and call it in main after the te
     	# Cloud Context Profile is a child of a Tenant
     	# Cloud Context Profile needs to be associated to a VRF 
     	create_cloud_ctx_profile(tenant)
-
-On the console:
-
-	python workshop.py
 	
-You should see a json output with the tenant, vrf , cloud context profile and other objects.
+		# submit the configuration to the apic and print a success message
+		# Code here....
 
 
 ### Task 5. 
-####Create a Relation to the VRF
+#### Create a Relation to the VRF
 In the method create_cloud_context_profile, associate cloud context to the VRF
 
 Continue editing <em>workshop.py</em>
@@ -321,14 +320,9 @@ Continue editing <em>workshop.py</em>
 	#attach Cloud Context Profile to a VRF
     	attach_cloud_vrf = cobra.model.cloud.RsToCtx(cloud_ctx_profile, tnFvCtxName=VRF)
 
-On the console:
 
-	python workshop.py
-	
-You should see a json output with the tenant, vrf , cloud context profile and other objects.
-
-###Task 6. 
-####Create a Relation to an AWS region
+### Task 6. 
+#### Create a Relation to an AWS region
 
 In the method create_cloud_context_profile, attach context profile to an AWS region
 
@@ -337,33 +331,25 @@ Continue editing <em>workshop.py</em>
 		#attach Cloud Context Profile to a Cloud Region
     	attach_cloud_region = cobra.model.cloud.RsCtxProfileToRegion(cloud_ctx_profile, tDn=REGIONPROFILE)
 
-On the console:
-
-	python workshop.py
-	
-You should see a json output with the tenant, vrf , cloud context profile and other objects.
 
 
 
-###Task 7: 
-####Create a CIDR
+
+### Task 7: 
+#### Create a CIDR
 
 In the method create_cloud_context_profile, create a child object of the Cloud Context Profile, Cloud CIDR.
 
 Continue editing <em>workshop.py</em>
 
-	#create Cloud CIDR
+		#create Cloud CIDR
     	cloud_cidr = cobra.model.cloud.Cidr(cloud_ctx_profile, addr=CIDRADDR, primary="yes")
 
-On the console:
-
-	python workshop.py
-	
-You should see a json output with the tenant, vrf , cloud context profile and other objects.
 
 
-###Task 8: 
-####Create a Subnet and Attach it to AWS Availability Zone
+
+### Task 8: 
+#### Create a Subnet and Attach it to AWS Availability Zone
 
 In the method create_cloud_context_profile, create a child object of the previously created cloud CIDR, Cloud Subnet. Attach that Subnet to the AWS region
 
@@ -385,7 +371,7 @@ You should see a json output with the tenant, vrf , cloud context profile and ot
 
 
 	
-###Task 9:
+### Task 9:
 #### Create a Filter and Filter Entry
 A filter classifies a collection of network packet  attributes
 
@@ -440,7 +426,8 @@ Define a method <em>create_filters</em> and call it in main after the tenant obj
     	# Filter has entries
     	# Filter is equivalent to Security Group Rule
     	create_filters(tenant)
-
+		# submit the configuration to the apic and print a success message
+		# Code here....
 
 
 
@@ -453,7 +440,7 @@ You should see a json output with the tenant, vrf , cloud context profile, filte
 
 
 
-###Task 10:
+### Task 10:
 #### Create a Contact, Contract Subject and Attach it to the filter 
 Contract is a set of rules governing communication between EndPoint Groups
 
@@ -495,7 +482,9 @@ Define a method <em>create_contract</em> and call it in main after the tenant ob
 		# Contarct Binds multiple filters together
     	# Contract is equivalent to Security Group Rule
     	create_contract(tenant)
-
+		# submit the configuration to the apic and print a success message
+		# Code here....
+		
 On the console:
 
 	python workshop.py
@@ -503,7 +492,7 @@ On the console:
 You should see a json output with the tenant, vrf , cloud context profile, contract, contract subject and other objects.	
 
 	
-###Task 11:
+### Task 11:
 #### Create a Cloud App
 
 Cloud Application is a collection of end points groups and contract between them
@@ -536,7 +525,8 @@ Define a method <em>create_cloud_app</em> and call it in main after the tenant o
     	# Cloud App is a child of a Tenant
     	# It is a logical container for all policies related to one application
     	cloud_app = create_cloud_app(tenant)
-
+		# submit the configuration to the apic and print a success message
+		# Code here....
 
 On the console:
 
@@ -544,7 +534,7 @@ On the console:
 	
 You should see a json output with the tenant, vrf , cloud context profile, filter , filter entry and other objects.
 
-###Task 12:
+### Task 12:
 #### Create cloud external EPG. 	Attach EPG to a Cloud Context Profile and a Contract.
 
 
@@ -597,6 +587,8 @@ Define a method <em>create_cloud_ext_epg</em> and call it in main after the clou
 		# Cloud External EPG is a  EPG for Internet or inter-site
     	# Cloud EPG is a child of the Cloud App
     	create_cloud_ext_epg(cloud_app)
+		# submit the configuration to the apic and print a success message
+		# Code here....
     	
 On the console:
 
@@ -678,36 +670,7 @@ Define a method <em>create_cloud_epg_1</em>,<em>create_cloud_epg_2</em> and call
     	#create a Provided contract for EPG2
     	provided_contract_epg_2 = cobra.model.fv.RsProv(cloud_epg_2, tnVzBrCPName=CONTRACT)
 
-		def create_cloud_epg_1(cloud_app):
-    	# create cloud EPGs 
-    	cloud_epg_1 = cobra.model.cloud.EPg(cloud_app, name=EPG1)
-    	# attach epg to a vrf
-    	epg1_attach_vrf = cobra.model.cloud.RsCloudEPgCtx(cloud_epg_1, tnFvCtxName=VRF)
-    	# create cloud EP selector
-    	epg1_selector_1 = cobra.model.cloud.EPSelector(cloud_epg_1, name= EPG1SELECTOR1,
-                                                        matchExpression = "custom:tag=='user1epg1'")#user<usernumber>epg1
 
-    	#create a Consumer contract for EPG1
-    	consumed_contract_epg_1 = cobra.model.fv.RsCons(cloud_epg_1, tnVzBrCPName=CONTRACT)
-
-    	#create a Provided contract for EPG1
-    	provided_contract_epg_1 = cobra.model.fv.RsProv(cloud_epg_1, tnVzBrCPName=CONTRACT)
-
-
-	def create_cloud_epg_2(cloud_app):
-
-    	# create cloud EPGs
-    	cloud_epg_2 = cobra.model.cloud.EPg(cloud_app, name=EPG2)
-    	# attach epg to a vrf
-    	epg2_attach_vrf = cobra.model.cloud.RsCloudEPgCtx(cloud_epg_2, tnFvCtxName=VRF)
-    	# create cloud EP selector
-    	epg2_selector_1 = cobra.model.cloud.EPSelector(cloud_epg_2, name= EPG2SELECTOR1,
-                                                        matchExpression = "custom:tag=='user1epg2'")#user<usernumber>epg2
-
-    	#create a Consumer contract for EPG2
-    	consumed_contract_epg_2 = cobra.model.fv.RsCons(cloud_epg_2, tnVzBrCPName=CONTRACT)
-    	#create a Provided contract for EPG2
-    	provided_contract_epg_2 = cobra.model.fv.RsProv(cloud_epg_2, tnVzBrCPName=CONTRACT)
 
 
 	
@@ -721,6 +684,8 @@ Define a method <em>create_cloud_epg_1</em>,<em>create_cloud_epg_2</em> and call
     	create_cloud_epg_1(cloud_app)
 
     	create_cloud_epg_2(cloud_app)
+		# submit the configuration to the apic and print a success message
+		# Code here....
     	
 On the console:
 
