@@ -6,7 +6,7 @@
 	
 
 ### What does this docker container have: 
-1.	Ubuntu distribution of Linux with Terraform binary installed 
+1.	Ubuntu distribution of Linux 
 2.	ACI Python COBRA SDK for ACI 4.1
 		
 		cd /cobra
@@ -26,11 +26,11 @@ This lists the classes and the model methods.
 
 
 ###	Credentials
-	APIC: https://13.56.122.16
+	Cloud APIC: https://13.56.122.16
 
 	username: lab-user-{usernumber}
 
-	password: CiscoLive2019
+	password: 
 
 replace {usernumber} with the number assigned to your workstation
 eg: user1 will be "lab-user-1", user2 will be "lab-user-2"  and so on
@@ -39,19 +39,19 @@ eg: user1 will be "lab-user-1", user2 will be "lab-user-2"  and so on
 
 
 # LAB
-- 1. Create a session to the APIC 
-- 2. Tenant
-	-	3. Create a VRF
-	-  4.	Create a Cloud Context Domain 
-		-  5. Create a Relation to the VRF
-		-  6. Create a Relation to an AWS region
-		-  7. Create a CIDR
-			-  	8. Create a Subnet and attch it to a Availability Zone
-	-  9. Create Filters and Filter Entries
-	- 	10. Create a Contract, Contract Subject and form a relationship to the filters  
-	-  11.	Create an Cloud App
-		-  		12. Create an external EPG.
-		-  	13.	 Create cloud 2 EPGs
+- a. Create a session to the cloud APIC 
+- b. Tenant
+	-  c. Create a VRF
+	-  d.	Create a Cloud Context Profile 
+		-  e. Create a Relation to the VRF
+		-  f. Create a Relation to an AWS region
+		-  g. Create a CIDR
+			-  	h. Create a Subnet and add it to an Availability Zone
+	-  i. Create Filters and Filter Entries
+	- 	j. Create a Contract, Contract Subject and form a relationship to the filters  
+	-  k.	Create an Cloud App
+		-  	l. Create an external EPG.
+		-  	m. Create 2 cloud EPGs
 	     	  
 ### Variables
 
@@ -78,7 +78,7 @@ Import the libraires and define the main method
 
 	def main():
 	 	"""
-    	This function creates the new Tenant with a VRF, CloudCtx Profile, COntracts and Cloud APp.
+    	This function creates the new Tenant with a VRF, CloudCtx Profile, Contracts and Cloud App.
     	"""
 		print ("Main method")
 	
@@ -94,7 +94,7 @@ Make sure there are no errors
 Continue editing workshop.py
 
 ###Task 1:
-#### Create a session to the APIC 	
+#### Create a session to the cloud 
 In main method:
 
 	def main():
@@ -132,7 +132,7 @@ Continue editing <em>workshop.py</em>
     	If the name is already in use, it will exit the script early.
 
     	:param tenant_name: The new Tenant's name
-    	:param apic_session: An established session with the APIC
+    	:param apic_session: An established session with the cloud APIC
     	"""
     	# build query for existing tenants
     	tenant_query = cobra.mit.request.ClassQuery('fvTenant')
@@ -140,23 +140,34 @@ Continue editing <em>workshop.py</em>
 
     	# test for truthiness
     	if apic_session.query(tenant_query):
-        	print("\nTenant {} has already been created on the APIC\n".format(tenant_name))
+        		print("\nTenant {} has already been created on the cloud APIC\n".format(tenant_name))
 
 
 	def main():
-    	"""
-    	This function creates the new Tenant with a VRF, CloudCtx Profile, COntracts and Cloud APp.
-    	"""
-    	# create a session and define the root
-    	requests.packages.urllib3.disable_warnings()
-    	auth = cobra.mit.session.LoginSession(URL, LOGIN, PASSWORD)
-    	session = cobra.mit.access.MoDirectory(auth)
-    	session.login()
+		"""
+		This function creates the new Tenant with a VRF, CloudCtx Profile, COntracts and Cloud APp.
+		"""
+		# create a session and define the root
+		requests.packages.urllib3.disable_warnings()
+		auth = cobra.mit.session.LoginSession(URL, LOGIN, PASSWORD)
+		session = cobra.mit.access.MoDirectory(auth)
+		session.login()
 
-    	root = cobra.model.pol.Uni('')
+		root = cobra.model.pol.Uni('')
 
-    	# test if tenant name is already in use
-    	test_tenant(TENANT, session)
+		# test if tenant name is already in use
+		test_tenant(TENANT, session)
+
+		#submit the configuration to the apic and print a success message
+		config_request = cobra.mit.request.ConfigRequest()
+
+		config_request.addMo(tenant)
+
+		session.commit(config_request)
+
+		config_data = json.loads(config_request.data)
+
+		print("\nNew Objects created:\n\n{}\n".format(json.dumps(config_data, indent=4, sort_keys=True)))
 
 On the console:
 
@@ -166,9 +177,9 @@ Make sure there are no errors
 
 You will see an output that this tenant has already been created 
 
-Next you will create a Tenant managed object (MO) and commit it to APIC
+Next you will create a Tenant managed object (MO) and commit it to Cloud APIC
 
-<em>This is to test the idempotency of APIC</em>
+<em>This is to test the idempotency of Cloud APIC</em>
 
 
 Continue editing <em>workshop.py</em>
@@ -188,7 +199,7 @@ Continue editing <em>workshop.py</em>
     	# test if tenant name is already in use
     	test_tenant(TENANT, session)
 		# model new tenant configuration
-    	# each tenant in cAPIC is maps to an AWS user account
+    	# each tenant in Cloud APIC is maps to an AWS user account
     	tenant = cobra.model.fv.Tenant(root, name=TENANT)
 
     	#submit the configuration to the apic and print a success message
@@ -239,7 +250,7 @@ Define a method <em>create_vrf</em> and call it in main after the tenant object 
 	
 		# Creating a VRF give you the ability to have unique forwarding and application policy domain 
     	# and have overlapping overlapping IP address in the same tenant
-    	# In case of cAPIC, VRF maps to an AWS VPC
+    	# In case of cloud APIC, VRF maps to an AWS VPC
     	# VRF is a child of a Tenant
     	create_vrf(tenant)
 	
@@ -724,8 +735,8 @@ If all the configuration went through correctly and the varibles in variables.py
 - 6. Attach the Tags created in the EP selectors for appropriate EPGs
 - 7. Leave the default Security Policies.
 - 8. Use <em>capic-workshop.pem</em> as the key
-- 8. Repeat the same for the other EC2 and assign it to the other EPG portgroup
-- 9. Make sure the EPGs are able to ping each other 
+- 8. Repeat the same for the other EC2 instances and assign them to the other EPGs
+- 9. Make sure the EndPoints are able to ping each other 
 
 
 
