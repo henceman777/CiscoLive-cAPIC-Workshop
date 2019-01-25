@@ -162,14 +162,6 @@ Continue editing <em>workshop.py</em>
 		# test if tenant name is already in use
 		test_tenant(TENANT, session)
 
-		#submit the configuration to the apic and print a success message
-		config_request = cobra.mit.request.ConfigRequest()
-
-		
-
-		session.commit(config_request)
-
-		config_data = json.loads(config_request.data)
 
 
 On the console:
