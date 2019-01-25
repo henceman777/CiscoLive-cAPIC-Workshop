@@ -26,11 +26,11 @@ This lists the classes and the model methods.
 
 
 ###	Credentials
-	Cloud APIC: https://13.56.122.16
+	Cloud APIC: https://13.52.130.246
 
 	username: lab-user-{usernumber}
 
-	password: 
+	password: CiscoLiveBarcelona
 
 replace {usernumber} with the number assigned to your workstation
 eg: user1 will be "lab-user-1", user2 will be "lab-user-2"  and so on
