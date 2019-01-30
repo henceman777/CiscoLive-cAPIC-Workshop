@@ -2,7 +2,7 @@
 
 ### Go to the terminal and run: 
 
-	docker run -it devarshishah3/capicwkshp:latest /bin/bash
+	docker run -it devarshishah3/capicwkshp:v13 /bin/bash
 	
 
 ### What does this docker container have: 
